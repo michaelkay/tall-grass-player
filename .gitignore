@@ -1,0 +1,10 @@
+*.bak
+*.zip
+api/Slim/*
+!api/Slim/readme.txt
+vendor/files/*
+!vendor/files/readme.txt
+vendor/fonts/*
+!vendor/fonts/readme.txt
+vendor/js/*
+!vendor/js/readme.txt

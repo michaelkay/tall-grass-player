@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<!-- 
+(c)2017 The Green Island Companies LLC
+//  This Source Code Form is subject to the terms of the Mozilla Public
+//  License, v. 2.0. If a copy of the MPL was not distributed with this
+//  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Designed for use on the Raspberry Pi. Find out more at
+// http://raspberrypimaker.com
+//
+// Green Island Companies - http://greenislandcompanies.com
+//
+// Install instructions
+//
+// lighttpd
+// Your lighttpd configuration file should contain this code (along with other settings you may need). This code requires lighttpd >= 1.4.24.
+// url.rewrite-if-not-file = ("(.*)" => "/index.php/$0")
+// This assumes that Slim’s index.php is in the root folder of your project (www root).
+// 
+// https://github.com/slimphp/Slim/archive/2.6.3.zip
+// https://github.com/twbs/ratchet/releases/download/v2.0.2/ratchet-2.0.2-dist.zip
+// https://github.com/benmajor/jQuery-Touch-Events/archive/1.0.9.zip
+// https://github.com/blueimp/JavaScript-Templates/archive/v3.11.0.zip
+// https://github.com/RubaXa/Sortable/archive/1.4.0.zip
+// https://github.com/michaelkay/cookies.js/archive/01.zip
+-->
+<html>
+ <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Pool Radio Stations</title>
+
+    <!-- Sets initial viewport load and disables zooming  -->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <!-- Makes your app chrome-less once bookmarked to your phone's home screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="mobile-web-app-capable" content="yes">
+	
+	<!-- This css file has a bug fix not found in github. Use local copy -->
+    <link href="css/ratchet.css" rel="stylesheet">
+    <link href="css/tgp.css" rel="stylesheet">
+	<!-- http://fontello.com/ -->
+    <link href="fonts/fontello-a6accce1/css/fontello.css" rel="stylesheet">
+
+    <!-- Include the compiled Ratchet JS -->
+	<!-- https://github.com/twbs/ratchet -->
+    <script src="vendor/js/ratchet.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+		crossorigin="anonymous"></script>
+	<!-- https://github.com/benmajor/jQuery-Touch-Events -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-touch-events/1.0.9/jquery.mobile-events.min.js"></script>
+	<!-- https://github.com/blueimp/JavaScript-Templates -->
+	<script src="vendor/js/tmpl.min.js"></script>
+	<!-- Latest Sortable https://github.com/RubaXa/Sortable -->
+	<script src="vendor/js/Sortable.min.js"></script>
+	<!-- https://github.com/madmurphy/cookies.js -->
+	<script src="vendor/js/cookies_min.js"></script>
+    <!-- <script src="js/shake.js"></script> -->
+
+	<!-- Local scripts for the Tall Grass Player (tgp) -->
+	<script src="js/tgp.js?q=126"></script>
+</head>
+<body>
+<!-- Header bar -->
+    <header class="bar bar-nav">
+       <button id="queueinfo" class="btn pull-left">Queue - 0</button>
+       <h1 class="title">Pool Radio Stations</h1>
+       <a id="btn-config" class="icon tgp-cog-1 pull-right"></a>
+       <a id="btn-home" class="icon icon-home pull-right" style="display: none"></a>
+    </header>
+    
+<!-- Content pages -->
+<div class="content">
+<div id="page_home" class="page">
+	<div class="st_list" id="l_pl">
+		<button class="btn btn-block" style="background-color: lightgreen;">System Playlists</button>
+		<div class="stations card" style="display: none;">
+			<ul class="table-view">
+			<li>Loading...</li>
+			</ul>
+		</div>
+	</div>
+			
+</div>
+
+<div id="page_config" class="page" style="display:none">
+    <h3>Config Page</h3>
+	<div class="row-sm">
+		<div class="col-sm-5"></div>
+		<div class="col-sm">
+			<button id="btn-cat-edit" class="btn btn-block">Catagory Edit</button>
+			<div id="st_edit"></div>
+		</div>
+		<div class="col-sm-5"></div>
+	</div>
+	<div class="card">
+		<ul class="table-view">
+		  <li class="table-view-cell">
+			Loop playqueue
+			<div id="tog-repeat" class="toggle">
+			  <div class="toggle-handle"></div>
+			</div>
+		  </li>
+		  <li class="table-view-cell">
+			Play item on add
+			<div id="tog-play-item" class="toggle">
+			  <div class="toggle-handle"></div>
+			</div>
+		  </li>
+		  <li class="table-view-cell">
+			Clear queue on add
+			<div id="tog-clear-queue" class="toggle">
+			  <div class="toggle-handle"></div>
+			</div>
+		  </li>
+		  <li class="table-view-cell">
+			Browser playback
+			<div id="tog-local-play" class="toggle">
+			  <div class="toggle-handle"></div>
+			</div>
+		  </li>
+		</ul>
+	</div>
+	<div class="row-sm">&nbsp</div>
+	<div class="row-sm">&nbsp</div>
+	<div class="row-sm">&nbsp</div>
+	<div class="row-sm">&nbsp</div>
+	<div class="row-sm">
+		<div class="col-sm-15"></div>
+		<div class="col-sm">
+			Software created by <a href="http://greenislandcompanies.com">The Green Island Companies LLC</a>
+		</div>
+		<div class="col-sm-15"></div>
+	</div>
+</div>
+
+<div id="page_edit" class="page" style="display:none">
+</div>
+
+<div id="page_queue" class="page" style="display:none">
+</div>
+
+<div id="page_volume" class="page cf" style="display:none; background-color: #686868;height:100%">
+        <div class="knob-surround">
+          <div class="knob"></div>
+          <span class="min">Min</span>
+          <span class="max">Max</span>
+          <div class="ticks">
+            <div class="tick activetick"></div>
+            <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+            <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+			<div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+            <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+            <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+            <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+            <div class="tick"></div><div class="tick"></div><div class="tick"></div>
+          </div>
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<div class="bar bar-standard bar-footer">
+	<div id="bar-edit" class="row-sm" style="display:none">
+	<div class="col-sm-10">
+	 <span title="Add catagory" class="add-cat-button icon  tgp-plus-squared"></span>
+	 <span title="Add station" class="add-st-button icon  tgp-plus-squared"></span>
+	</div>
+	<div class="message-area col-sm"></div>
+	<div class="col-sm-10"></div>
+	</div>
+
+	<div id="bar-home" class="row-sm">
+	<div class="col-sm"></div>
+	<div id="play-pause" class="col-sm">
+		<span id="btn-pause" class="icon icon-pause"  style="display:none"></span>
+		<span id="btn-play" class="icon icon-play"></span>
+	</div>
+	<div class="col-sm"></div>
+	<div class="col-sm">
+		<span id="btn-stop" class="icon icon-stop"></span>
+	</div>
+	<div class="col-sm"></div>
+	<div class="col-sm"></div>
+	<div class="col-sm">
+		<span id="btn-prev" class="icon icon-left"></span>
+	</div>
+	<div class="col-sm"></div>
+	<div class="col-sm">
+		<span id="btn-next" class="icon icon-right"></span>
+	</div>
+	<div class="col-sm"></div>
+	<div class="col-sm"></div>
+	<div class="col-sm">
+		<span id="btn-mute" class="icon icon-sound4"></span>
+	</div>
+	<div class="col-sm"></div>
+	<div class="col-sm">
+		<span id="btn-volume" class="icon icon-sound"></span>
+	</div>
+	<div class="col-sm"></div>
+	</div>
+</div>
+<!-- This is where the templates are loaded. Happens on page load -->
+<div id="all_template"></div>
+</body>
+
+</html>

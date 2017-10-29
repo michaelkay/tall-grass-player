@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<!-- 
+(c)2017 The Green Island Companies LLC
+//  This Source Code Form is subject to the terms of the Mozilla Public
+//  License, v. 2.0. If a copy of the MPL was not distributed with this
+//  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Designed for use on the Raspberry Pi. Find out more at
+// http://raspberrypimaker.com
+//
+// Green Island Companies - http://greenislandcompanies.com
+//
+-->
+  <head>
+    <meta charset="utf-8">
+    <title>Radio Station List</title>
+
+    <!-- Sets initial viewport load and disables zooming  -->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=yes, minimal-ui">
+
+    <!-- Makes your prototype chrome-less once bookmarked to your phone's home screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link href="css/ratchet.css" rel="stylesheet">
+    <link href="css/tgp.css" rel="stylesheet">
+
+    <script src="vendor/js/ratchet.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+		crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-touch-events/1.0.9/jquery.mobile-events.min.js"></script>
+	<script src="vendor/js/tmpl.min.js"></script>
+	
+<script type="text/x-tmpl" id="station-list">
+<ul>
+{% for (var key in o) { %}
+    <li><b>(#{%=key%}) {%=o[key].name%}</b>
+	<ul>
+	{% for (var key2 in o[key].stationInfo) { %}
+		<li>(#{%=key2%}) {%=o[key].stationInfo[key2].name%} [{%=o[key].stationInfo[key2].type%}]<br>{%=o[key].stationInfo[key2].url%}</li>
+	{% } %}
+	</ul>
+	</li>
+{% } %}
+</ul>
+</script>
+
+<script>
+    $(document).ready(function() {
+        $.ajax({
+            type: 'GET',
+            url: 'api/stations.php/allstations',
+            dataType: "json", // data type of response
+            success: function(data) {
+				console.log(data);
+				$("#page_home").append(tmpl("station-list",data));
+			}
+		});
+});
+</script>	
+</head>
+<body>
+    <!-- Make sure all your bars are the first things in your <body> -->
+    <header class="bar bar-nav">
+       <h1 class="title">Stations List</h1>
+       <a href="index.html" data-ignore="push" class="icon icon-home pull-right" ></a>
+    </header>
+    
+<div class="content">
+
+<div id="page_home" class="page">
+
+</div>
+
+</div>
+<div class="bar bar-standard bar-footer">
+<div class="row-sm"><div class="col-sm">
+Created by <a data-ignore="push" href="http://greenislandcompanies.com">Green Island Companies</a>
+</div></div>
+</div>
+<div id="all_template"></div>
+</body>
+</html>	
