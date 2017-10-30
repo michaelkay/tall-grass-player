@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- 
-(c)2017 The Green Island Companies LLC
+	(c)2017 The Green Island Companies LLC
 //  This Source Code Form is subject to the terms of the Mozilla Public
 //  License, v. 2.0. If a copy of the MPL was not distributed with this
 //  file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -8,14 +8,21 @@
 // Designed for use on the Raspberry Pi. Find out more at
 // http://raspberrypimaker.com
 //
+// Developed by
 // Green Island Companies - http://greenislandcompanies.com
 //
 // Install instructions
+//
+// apache
+// The api directory has a .htaccess for the Slim php library. See https://www.slimframework.com/docs/start/web-servers.html
 //
 // lighttpd
 // Your lighttpd configuration file should contain this code (along with other settings you may need). This code requires lighttpd >= 1.4.24.
 // url.rewrite-if-not-file = ("(.*)" => "/index.php/$0")
 // This assumes that Slim’s index.php is in the root folder of your project (www root).
+//
+// In the vendor/ directory the is a shell script that will download the needed parts of each
+// of the required libraries.
 // 
 // https://github.com/slimphp/Slim/archive/2.6.3.zip
 // https://github.com/twbs/ratchet/releases/download/v2.0.2/ratchet-2.0.2-dist.zip
