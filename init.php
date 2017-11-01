@@ -31,11 +31,13 @@ $result = $db->query('CREATE TABLE "station" (
 )');
 echo json_encode($result) . '<br>';
   
-$result = $db->query('INSERT INTO "cat" ("name", "type", "sortorder") VALUES (\'Rock\',	\'ST\',	1)');
+$result = $db->query('INSERT INTO "cat" ("name", "type", "sortorder", "color") VALUES (\'Cool Sounds\',	\'ST\',	1, \'#D0FFFF\')');
 echo json_encode($result) . '<br>';
-$result = $db->query('INSERT INTO "cat" ("name", "type", "sortorder") VALUES (\'Techno\',	\'ST\',	2)');
+$result = $db->query('INSERT INTO "cat" ("name", "type", "sortorder", "color") VALUES (\'Techno\',	\'ST\',	2, \'#FFD0D0\')');
 echo json_encode($result) . '<br>';
-//$result = $db->query('INSERT INTO "station" ("c_id", "name", "url", "type", "sortorder") VALUES (1,	\'WMMR\',\'http://8703.live.streamtheworld.com:80/WMMRFMAAC_SC\',\'Rock\',99);');
-//echo json_encode($result) . '<br>';
-$result = $db->query('INSERT INTO "station" ("c_id", "name", "url", "type", "sortorder") VALUES (1,	\'RIT\',\'http://streaming.witr.rit.edu:8000/live\',\'Rock\',1);');
+$result = $db->query('INSERT INTO "station" ("c_id", "name", "url", "type", "sortorder") VALUES (2,	\'Traxx.fm Electro\',\'http://icepe3.infomaniak.ch:80/traxx003-low.mp3\',\'tech\',99);');
+echo json_encode($result) . '<br>';
+$result = $db->query('INSERT INTO "station" ("c_id", "name", "url", "type", "sortorder") VALUES (1,	\'WPSU Penn State Radio\',\'http://wpsu-ice.streamguys1.com/wpsu1\',\'other\',10);');
+echo json_encode($result) . '<br>';
+$result = $db->query('INSERT INTO "station" ("c_id", "name", "url", "type", "sortorder") VALUES (1,	\'Grooveyard Radio\',\'http://stardust.wavestreamer.com:3769/Live\',\'rock\',1);');
 echo json_encode($result) . '<br>';

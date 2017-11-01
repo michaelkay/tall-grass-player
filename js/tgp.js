@@ -519,7 +519,6 @@ function saveStationForm(event) {
 				$('#page_edit .st-name-edit').hide();
 				$('#page_edit .st-name-display').show();
 				$('#page_edit .st-edit').each(function(i){$(this).slideUp(200);});
-				//setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 5000 );
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
 				console.log('error: ' + jqXHR.responseText + " " + textStatus + " " + errorThrown);
