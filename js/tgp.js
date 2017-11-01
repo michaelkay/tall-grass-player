@@ -453,16 +453,14 @@ function saveCatForm(event) {
 			$(thisForm).find('.cat-name-text').html($(thisForm).find('[name=cat-name]').val());
 			$(thisForm).css({"background-color": $(thisForm).find('[name=color]').val()});
 			// Remove the edit fields and show the display field
-			$(".bar-footer .message-area").html("Updated").fadeIn(100);
+			$(".bar-footer .message-area").html("Updated").fadeIn(100).delay(5000).fadeOut(750);
 			$('#page_edit .st-name-edit').hide();
 			$('#page_edit .st-name-display').show();
 			$('#page_edit .st-edit').each(function(i){$(this).slideUp(200);});
-			setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 5000 );
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 			console.log('error: ' + jqXHR.responseText + " " + textStatus + " " + errorThrown);
-			$(".bar-footer .message-area").html("ERROR");
-			setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 9000 );
+			$(".bar-footer .message-area").html("ERROR").fadeIn(50).delay(9000).fadeOut(750);
 		}
 	} );
 };
@@ -491,16 +489,14 @@ function saveCatFormNew(event) {
 			$(thisForm).unbind('submit');
 			$(thisForm).submit(saveCatForm);
 			// Remove the edit fields and show the display field
-			$(".bar-footer .message-area").html("Added").fadeIn(100);
+			$(".bar-footer .message-area").html("Added").fadeIn(100).delay(5000).fadeOut(750);
 			$('#page_edit .st-name-edit').hide();
 			$('#page_edit .st-name-display').show();
 			$('#page_edit .st-edit').each(function(i){$(this).slideUp(200);});
-			setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 5000 );
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 			console.log('error: ' + jqXHR.responseText + " " + textStatus + " " + errorThrown);
-			$(".bar-footer .message-area").html("ERROR");
-			setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 9000 );
+			$(".bar-footer .message-area").html("ERROR").fadeIn(50).delay(9000).fadeOut(750);
 		}
 	} );
 };
@@ -519,15 +515,15 @@ function saveStationForm(event) {
 			success: function() { 
 				// Update the output fields with edited record info
 				$(thisForm).find('.st-name-text').html($(thisForm).find('[name=st-name]').val());
-				$(".bar-footer .message-area").html("Updated").fadeIn(100);
+				$(".bar-footer .message-area").html("Updated").fadeIn(100).delay(5000).fadeOut(750);
 				$('#page_edit .st-name-edit').hide();
 				$('#page_edit .st-name-display').show();
 				$('#page_edit .st-edit').each(function(i){$(this).slideUp(200);});
-				setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 5000 );
+				//setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 5000 );
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
-				$(".bar-footer .message-area").html("ERROR " + jqXHR.responseText);
-				setTimeout(function() {$(".bar-footer .message-area").hideMessage()}, 9000 );
+				console.log('error: ' + jqXHR.responseText + " " + textStatus + " " + errorThrown);
+				$(".bar-footer .message-area").html("ERROR").fadeIn(100).delay(9000).fadeOut(750);
 			}
 		} );
 	} else {
@@ -540,13 +536,11 @@ function saveStationForm(event) {
 			success: function() {
 				// Just hide the form and show a message
 				$(thisForm).hide();
-				$(".bar-footer .message-area").html("Moved").fadeIn(100);
-				setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 5000 );
+				$(".bar-footer .message-area").html("Moved").fadeIn(100).delay(5000).fadeOut(750);
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
 				console.log('error: ' + jqXHR.responseText + " " + textStatus + " " + errorThrown);
-				$(".bar-footer .message-area").html("ERROR");
-				setTimeout(function() {$(".bar-footer .message-area").hideMessage()}, 9000 );
+				$(".bar-footer .message-area").html("ERROR").fadeIn(100).delay(9000).fadeOut(750);
 			}
 		} );
 	}
@@ -575,16 +569,14 @@ function saveStationFormNew(event) {
 			$(thisForm).unbind('submit');
 			$(thisForm).submit(saveStationForm);
 			// Remove the edit fields and show the display field
-			$(".bar-footer .message-area").html("Added").fadeIn(100);
+			$(".bar-footer .message-area").html("Added").fadeIn(100).delay(5000).fadeOut(750);
 			$('#page_edit .st-name-edit').hide();
 			$('#page_edit .st-name-display').show();
 			$('#page_edit .st-edit').each(function(i){$(this).slideUp(200);});
-			setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 5000 );
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 			console.log('error: ' + jqXHR.responseText + " " + textStatus + " " + errorThrown);
-			$(".bar-footer .message-area").html("ERROR");
-			setTimeout(function() {$(".bar-footer .message-area").hideMessage()}, 9000 );
+			$(".bar-footer .message-area").html("ERROR").fadeIn(100).delay(9000).fadeOut(750);
 		}
 	} );
 }
@@ -864,21 +856,18 @@ $(document).ready(function() {
 		
 		if ($(this).closest('form').find('[name=st-name]').val().length < 3) { 
 			$(this).parents('form').find('[name=st-name]').css({"border": "2px solid #f00"});
-			$(".bar-footer .message-area").html("Too short").fadeIn(100);
-			setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 9000 );
+			$(".bar-footer .message-area").html("Too short").fadeIn(100).delay(9000).fadeOut(750);
 			formOK = false;
 		} else if ($(this).closest('form').find('[name=st-name]').val().length > 29) {
 			$(this).parents('form').find('[name=st-name]').css({"border": "2px solid #f00"});
-			$(".bar-footer .message-area").html("Too long").fadeIn(100);
-			setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 9000 );
+			$(".bar-footer .message-area").html("Too long").fadeIn(100).delay(9000).fadeOut(750);
 			formOK = false;
 		} else {
 			$(this).parents('form').find('[name=st-name]').removeAttr( 'style' );
 		}
 		if ($(this).closest('form').find('[name=url]').val().length < 4) {
 			$(this).parents('form').find('[name=url]').css({"border": "2px solid #f00"});
-			$(".bar-footer .message-area").html("Too short").fadeIn(100);
-			setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 9000 );
+			$(".bar-footer .message-area").html("Too short").fadeIn(100).delay(9000).fadeOut(750);
 			formOK = false;
 		} else {
 			$(this).parents('form').find('[name=url]').removeAttr( 'style' );
@@ -921,13 +910,11 @@ $(document).ready(function() {
 					$(parentForm).parent().find('form span.raise-btn').first().hide();
 					$(parentForm).parent().find('form span.lower-btn').last().hide();			
 					//Message
-					$(".bar-footer .message-area").html("Deleted").fadeIn(100);
-					setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 5000 );
+					$(".bar-footer .message-area").html("Deleted").fadeIn(100).delay(5000).fadeOut(750);
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
 					console.log('error: ' + jqXHR.responseText + " " + textStatus + " " + errorThrown);
-					$(".bar-footer .message-area").html("ERROR").fadeIn(100);
-					setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 9000 );
+					$(".bar-footer .message-area").html("ERROR").fadeIn(100).delay(9000).fadeOut(750);
 				}
 			} );
 		} else {
@@ -967,8 +954,7 @@ $(document).ready(function() {
 			$(this).closest('form').submit();
 		} else {
 			$(this).parents('form').find('[name=cat-name]').css({"border": "2px solid #f00"});
-			$(".bar-footer .message-area").html("Too short");
-			setTimeout(function() {$(".bar-footer .message-area").html("") }, 5000 );
+			$(".bar-footer .message-area").html("Too short").fadeIn(100).delay(9000).fadeOut(750);
 		} } );
 	// Cat reorder buttons
 	$('#page_edit').on('click', '#cat_list .lower-btn', function(e) {
@@ -1006,13 +992,11 @@ $(document).ready(function() {
 					$(parentForm).parent().find('form span.raise-btn').first().hide();
 					$(parentForm).parent().find('form span.lower-btn').last().hide();			
 					//Message
-					$(".bar-footer .message-area").html("Deleted").fadeIn(100);
-					setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 5000 );
+					$(".bar-footer .message-area").html("Deleted").fadeIn(100).delay(5000).fadeOut(750);
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
 					console.log('error: ' + jqXHR.responseText + " " + textStatus + " " + errorThrown);
-					$(".bar-footer .message-area").html("ERROR").fadeIn(100);
-					setTimeout(function() {$(".bar-footer .message-area").fadeOut(750)}, 9000 );
+					$(".bar-footer .message-area").html("ERROR").fadeIn(100).delay(9000).fadeOut(750);
 				}
 			} );
 		} else {

@@ -1,4 +1,30 @@
 <?php
+
+// IF YOU ARE BEHIND A PROXY SERVER
+// Uncomment the following lines.
+// If your server does NOT require authentication, comment out
+// the header line below.
+//
+// If you are NOT BEHIND a proxy server, do not include this code
+/*
+$PROXY_HOST = "proxy"; // Proxy server address
+$PROXY_PORT = "8080";    // Proxy server port
+$PROXY_USER = "user";    // Username
+$PROXY_PASS = "pass";   // Password
+
+$auth = base64_encode("$PROXY_USER:$PROXY_PASS");
+stream_context_set_default(
+ array(
+  'http' => array(
+   'proxy' => "tcp://$PROXY_HOST:$PROXY_PORT",
+   'request_fulluri' => true,
+   // Remove the 'header' option if proxy authentication is not required
+   'header' => "Proxy-Authorization: Basic $auth"
+  )
+ )
+);
+*/
+
 require 'Slim/Slim.php';
 \Slim\Slim::registerAutoloader();
 
@@ -19,7 +45,28 @@ $app->delete('/deletecat/:id', 'removeGrouping');
 
 $app->run();
 
-    
+ // Helper function - get the first stream from a M3u file. Used to get the pure stream
+ // if the user passes it to the save function
+ function parseM3u($playlist) {
+	
+	// Remove byte order mark
+	if (substr($playlist, 0, 3) === "\xEF\xBB\xBF") {
+		$playlist = substr($playlist, 3);
+    }
+	
+	$lines = explode("\n", $playlist);
+	$linesCount = count($lines);
+	
+	// check for empty file or extended format
+	if($linesCount == 0 || (strtoupper(substr(trim($lines[0]), 0, 7)) === '#EXTM3U') ) {
+        $line = null;
+    } else {
+		$line = trim($lines[0]);
+	}
+	
+	return $line;
+}
+
 function setVolume() {
     // calls RefreshInfo() on create
     $mpd = new mpd(MPD_HOST, MPD_PORT, MPD_PASSWORD);
@@ -245,11 +292,37 @@ function saveStation($id) {
 	$stUrl = $request->params('url');
 	$stType = $request->params('type');
 	
-	if($id > 0 && isset($stName) && isset($stUrl) && isset($stType)) {
+	// If the url is a playlist, decompse the playlist into the raw stream
+	// NOTE: This will download the playlis and parse it. See the top of the 
+	// file for proxy settings
+	if (isset($stUrl)) {
+		try {
+			if (substr($stUrl, -4) === '.m3u') {
+				$stUrl = parseM3u(file_get_contents($stUrl));
+			} else if (substr($stUrl, -4) === '.pls') {
+				$plStr = parse_ini_string(file_get_contents($stUrl), false, INI_SCANNER_RAW);
+				// A little error checking
+				if (isset($plStr['File1']))
+					$stUrl = $plStr['File1'];
+				else
+					$stUrl = null;
+			}
+		} catch (Exception $e) {
+			$stUrl = null;
+		}
+	}
+	
+	if (!isset($stUrl)) { 
+		$app->response->setStatus(400);
+		$app->response()->headers->set('Content-Type', 'application/json');
+		echo json_encode( array("error" => array( "text" => "bad playlist in " . __FUNCTION__) ) );
+	} else if($id > 0 && isset($stName) && isset($stUrl) && isset($stType)) {
 		try{
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("UPDATE station set name = ?, url = ?, type = ? WHERE id = ?");
 			$sth->execute(array($stName, $stUrl, $stType, $id));
+			$app->response()->headers->set('Content-Type', 'application/json');
+			echo json_encode( array("ok" => array($stName, $stUrl, $stType, $id) ) );
 	
 			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("Updated"); } );';
 			//echo 'setTimeout(function() {$(".message-area").hideMessage()}, 5000 );</script>';
@@ -269,7 +342,7 @@ function saveStation($id) {
 		//echo 'setTimeout(function() {$(".message-area").hideMessage()}, 9000 );</script>';
 	}
 }
-
+	
 // -----------------------------------------------------------------------------------------------------------
 // saveMoveStation()
 //
@@ -285,7 +358,25 @@ function saveMoveStation($id) {
 	$newCat = $request->params('moveCat');
 	$sort = $request->params('sort');
 	
-	if($id > 0 && isset($stName) && isset($stUrl) && isset($stType)) {
+	// If the url is a playlist, decompse the playlist into the raw stream
+	// NOTE: This will download the playlis and parse it. See the top of the 
+	// file for proxy settings
+	if (isset($stUrl) && substr($stUrl, -4) === '.m3u') {
+		$stUrl = parseM3u(file_get_contents($stUrl));
+	} else if (isset($stUrl) && substr($stUrl, -4) === '.pls') {
+		$plStr = parse_ini_string(file_get_contents($stUrl), false, INI_SCANNER_RAW);
+		// A little error checking
+		if (isset($plStr['File1']))
+			$stUrl = $plStr['File1'];
+		else
+			$stUrl = null;
+	}
+	
+	if (!isset($stUrl)) { 
+		$app->response->setStatus(400);
+		$app->response()->headers->set('Content-Type', 'application/json');
+		echo json_encode( array("error" => array( "text" => "bad playlist") ) );
+	} else if($id > 0 && isset($stName) && isset($stUrl) && isset($stType)) {
 		try{
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("UPDATE station set c_id = ?, name = ?, url = ?, type = ?, sortorder = ? WHERE id = ?");
@@ -324,8 +415,29 @@ function saveNewStation($cid) {
 	$stType = $request->params('type');
 	$stSort = $request->params('sort');
 	
-	// 
-	if($cid > 0 && isset($stName) && isset($stUrl) && isset($stType) && isset($stSort)) {
+	// If the url is a playlist, decompse the playlist into the raw stream
+	// NOTE: This will download the playlis and parse it. See the top of the 
+	// file for proxy settings
+	try {
+		if (isset($stUrl) && substr($stUrl, -4) === '.m3u') {
+			$stUrl = parseM3u(file_get_contents($stUrl));
+		} else if (isset($stUrl) && substr($stUrl, -4) === '.pls') {
+			$plStr = parse_ini_string(file_get_contents($stUrl), false, INI_SCANNER_RAW);
+			// A little error checking
+			if (isset($plStr['File1']))
+				$stUrl = $plStr['File1'];
+			else
+				$stUrl = null;
+		}
+	} catch (Exception $e) {
+		$stUrl = null;
+	}
+	
+	if (!isset($stUrl)) { 
+		$app->response->setStatus(400);
+		$app->response()->headers->set('Content-Type', 'application/json');
+		echo json_encode( array("error" => array( "text" => "bad playlist in " . __FUNCTION__) ) );
+	} else if($cid > 0 && isset($stName) && isset($stUrl) && isset($stType) && isset($stSort)) {
 		try{
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("INSERT INTO station (name, c_id, url, type, sortorder) VALUES (?, ?, ?, ?, ?)");
@@ -336,14 +448,11 @@ function saveNewStation($cid) {
 			$app->response->setStatus(500);
 			$app->response()->headers->set('Content-Type', 'application/json');
 			echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
-			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("PDO Error: ".$e); } ); </script>';
 		}
 	} else {
 		$app->response->setStatus(400);
 		$app->response()->headers->set('Content-Type', 'application/json');
 		echo json_encode( array("error" => array( "text" => "input error") ) );
-		//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("ERROR"); } );';
-		//echo 'setTimeout(function() {$(".message-area").hideMessage()}, 9000 );</script>';
 	}
 }
 
