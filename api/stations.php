@@ -32,7 +32,7 @@ $app = new \Slim\Slim();
 
 $app->get('/allstations', 'loadAllStations');
 $app->get('/station/:id', 'loadStation');
-$app->post('/setvolume', 'setVolume');
+//$app->post('/setvolume', 'setVolume');
 $app->post('/setcatorder', 'setCatOrder');
 $app->post('/setstationorder', 'setStOrder');
 $app->put('/updatestation/:id', 'saveStation');
@@ -75,6 +75,9 @@ function setVolume() {
 }
 
 function setCatOrder() {
+	$app = \Slim\Slim::getInstance();
+	$app->response()->headers->set('Content-Type', 'application/json');
+
     $request = json_decode(Slim\Slim::getInstance()->request()->getBody());
 	$ar=explode(',',$request->catOrder);
 	$sort = 10;
@@ -86,16 +89,16 @@ function setCatOrder() {
 			$sth->execute(array($sort += 10, $id));
 		}
 		$db = null;
-		} catch(PDOException  $e ){
-			$app->response->setStatus(500);
-			$app->response()->headers->set('Content-Type', 'application/json');
-			echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
-			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("PDO Error: ".$e); } ); </script>';
-		}
-	echo json_encode(array("catOrder" => $ar));
+		echo json_encode(array("catOrder" => $ar));
+	} catch(PDOException  $e ){
+		$app->response->setStatus(500);
+		echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
+	}
 }
 
 function setStOrder() {
+	$app = \Slim\Slim::getInstance();
+	$app->response()->headers->set('Content-Type', 'application/json');
 	$ar = array();
 	
     $request = json_decode(Slim\Slim::getInstance()->request()->getBody());
@@ -110,13 +113,11 @@ function setStOrder() {
 			$sth->execute(array($sort += 10, $id));
 		}
 		$db = null;
-		} catch(PDOException  $e ){
-			$app->response->setStatus(500);
-			$app->response()->headers->set('Content-Type', 'application/json');
-			echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
-			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("PDO Error: ".$e); } ); </script>';
-		}
-	echo json_encode(array("catOrder" => $ar));
+		echo json_encode(array("catOrder" => $ar));
+	} catch(PDOException  $e ){
+		$app->response->setStatus(500);
+		echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
+	}
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -125,29 +126,31 @@ function setStOrder() {
 // Loads the entire station DB in a JSON object. Works because the DB is never large
 // -----------------------------------------------------------------------------------------------------------
 function loadAllStations() {
+	$app = \Slim\Slim::getInstance();
+	$app->response()->headers->set('Content-Type', 'application/json');
 	$allStations = array();
 
 	try{
-	$db = new PDO('sqlite:../radio.db');
+		$db = new PDO('sqlite:../radio.db');
 
-	// Load the 1st level 
-	$sth = $db->prepare("SELECT id,name,type,color,sortorder FROM cat ORDER BY sortorder;");
-	$sth->execute();
+		// Load the 1st level 
+		$sth = $db->prepare("SELECT id,name,type,color,sortorder FROM cat ORDER BY sortorder;");
+		$sth->execute();
 
-	$allStations = $sth->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC);
-	$allStations = array_map('reset', $allStations);
+		$allStations = $sth->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC);
+		$allStations = array_map('reset', $allStations);
 
-	// load the second level
-	$sth = $db->prepare("SELECT id,name,type,url,sortorder FROM station WHERE c_id = ? ORDER BY sortorder;");
-	foreach($allStations as $st_id => $station) {
-		$sth->execute(array($st_id));
-		$allStations[$st_id]['stationInfo'] = $sth->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC);
-		$allStations[$st_id]['stationInfo'] = array_map('reset', $allStations[$st_id]['stationInfo']);
-	}
-
-	echo json_encode($allStations);
+		// load the second level
+		$sth = $db->prepare("SELECT id,name,type,url,sortorder FROM station WHERE c_id = ? ORDER BY sortorder;");
+		foreach($allStations as $st_id => $station) {
+			$sth->execute(array($st_id));
+			$allStations[$st_id]['stationInfo'] = $sth->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC);
+			$allStations[$st_id]['stationInfo'] = array_map('reset', $allStations[$st_id]['stationInfo']);
+		}
+		echo json_encode($allStations);
 	} catch(PDOException  $e ){
-	echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
+		$app->response()->setStatus(500);
+		echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
 	}
 }
 
@@ -157,37 +160,40 @@ function loadAllStations() {
 // Loads a station entry in a JSON object
 // -----------------------------------------------------------------------------------------------------------
 function loadStation($id) {
+	$app = \Slim\Slim::getInstance();
+	$app->response()->headers->set('Content-Type', 'application/json');
 	$allStations = array();
 	$otherStations = array();
 
 	try{
-	$db = new PDO('sqlite:../radio.db');
+		$db = new PDO('sqlite:../radio.db');
 
-	// Load the 1st level 
-	$sth = $db->prepare("SELECT id,name,type,color,sortorder FROM cat WHERE id = ? ORDER BY sortorder;");
-	$sth->execute(array($id));
+		// Load the 1st level 
+		$sth = $db->prepare("SELECT id,name,type,color,sortorder FROM cat WHERE id = ? ORDER BY sortorder;");
+		$sth->execute(array($id));
 
-	$allStations = $sth->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC);
-	$allStations = array_map('reset', $allStations);
+		$allStations = $sth->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC);
+		$allStations = array_map('reset', $allStations);
 
-	// load the second level
-	$sth = $db->prepare("SELECT id,name,type,url,sortorder FROM station WHERE c_id = ? ORDER BY sortorder;");
-	foreach($allStations as $st_id => $station) {
-		$sth->execute(array($st_id));
-		$allStations[$st_id]['stationInfo'] = $sth->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC);
-		$allStations[$st_id]['stationInfo'] = array_map('reset', $allStations[$st_id]['stationInfo']);
-	}
+		// load the second level
+		$sth = $db->prepare("SELECT id,name,type,url,sortorder FROM station WHERE c_id = ? ORDER BY sortorder;");
+		foreach($allStations as $st_id => $station) {
+			$sth->execute(array($st_id));
+			$allStations[$st_id]['stationInfo'] = $sth->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC);
+			$allStations[$st_id]['stationInfo'] = array_map('reset', $allStations[$st_id]['stationInfo']);
+		}
 
-	// Load the 'other' categories list
-	$sth = $db->prepare("SELECT id,name,type,color,sortorder FROM cat WHERE id <> ? ORDER BY sortorder;");
-	$sth->execute(array($id));
+		// Load the 'other' categories list
+		$sth = $db->prepare("SELECT id,name,type,color,sortorder FROM cat WHERE id <> ? ORDER BY sortorder;");
+		$sth->execute(array($id));
 
-	$otherStations = $sth->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC);
-	$otherStations = array_map('reset', $otherStations);
+		$otherStations = $sth->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC);
+		$otherStations = array_map('reset', $otherStations);
 
-	echo json_encode(array("thisStation" => $allStations, "otherStations" => $otherStations));
+		echo json_encode(array("thisStation" => $allStations, "otherStations" => $otherStations));
 	} catch(PDOException  $e ){
-	echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
+		$app->response->setStatus(500);
+		echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
 	}
 }
 
@@ -198,6 +204,7 @@ function loadStation($id) {
 // -----------------------------------------------------------------------------------------------------------
 function saveGrouping($id = 0) {
 	$app = \Slim\Slim::getInstance();
+	$app->response()->headers->set('Content-Type', 'application/json');
 	
 	$request = $app->request();
 	$catName = $request->params('cat-name');
@@ -212,36 +219,24 @@ function saveGrouping($id = 0) {
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("INSERT INTO cat (name, type, color, sortorder) VALUES (?, ?, ?, ?)");
 			$sth->execute(array($request->params('cat-name'), $request->params('type'), $request->params('color'), $request->params('sort')));
-			$app->response()->headers->set('Content-Type', 'application/json');
 			echo json_encode(array("id" => $db->lastInsertId()));
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
-			$app->response()->headers->set('Content-Type', 'application/json');
 			echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
-			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("PDO Error: ".$e); } ); </script>';
 		}
 	} else if($id > 0 && isset($catName) /*&& isset($catType)*/ && isset($catColor)) {
 		try{
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("UPDATE cat set name = ?, type = ?, color = ? WHERE id = ?");
 			$sth->execute(array($request->params('cat-name'), $request->params('type'), $request->params('color'), $id));
-	
-			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("Updated"); } );';
-			//echo 'setTimeout(function() {$(".message-area").hideMessage()}, 5000 );</script>';
-			//loadAllStations();
-			//$db = null;
+			$db = null;
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
-			$app->response()->headers->set('Content-Type', 'application/json');
 			echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
-			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("PDO Error: ".$e); } ); </script>';
 		}
 	} else {
 		$app->response->setStatus(400);
-		$app->response()->headers->set('Content-Type', 'application/json');
 		echo json_encode( array("error" => array( "text" => "input error") ) );
-		//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("ERROR"); } );';
-		//echo 'setTimeout(function() {$(".message-area").hideMessage()}, 9000 );</script>';
 	}
 }
 
@@ -253,29 +248,21 @@ function saveGrouping($id = 0) {
 // -----------------------------------------------------------------------------------------------------------
 function removeGrouping($id) {
 	$app = \Slim\Slim::getInstance();
+	$app->response()->headers->set('Content-Type', 'application/json');
 	
 	if($id > 0) {
 		try{
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("DELETE FROM cat WHERE id = ?");
 			$sth->execute(array($id));
-	
-			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("Updated"); } );';
-			//echo 'setTimeout(function() {$(".message-area").hideMessage()}, 5000 );</script>';
-			//loadAllStations();
-			//$db = null;
+			$db = null;
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
-			$app->response()->headers->set('Content-Type', 'application/json');
 			echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
-			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("PDO Error: ".$e); } ); </script>';
 		}
 	} else {
 		$app->response->setStatus(400);
-		$app->response()->headers->set('Content-Type', 'application/json');
 		echo json_encode( array("error" => array( "text" => "input error") ) );
-		//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("ERROR"); } );';
-		//echo 'setTimeout(function() {$(".message-area").hideMessage()}, 9000 );</script>';
 	}
 }
 
@@ -286,6 +273,7 @@ function removeGrouping($id) {
 // -----------------------------------------------------------------------------------------------------------
 function saveStation($id) {
 	$app = \Slim\Slim::getInstance();
+	$app->response()->headers->set('Content-Type', 'application/json');
 	
 	$request = $app->request();
 	$stName = $request->params('st-name');
@@ -321,25 +309,15 @@ function saveStation($id) {
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("UPDATE station set name = ?, url = ?, type = ? WHERE id = ?");
 			$sth->execute(array($stName, $stUrl, $stType, $id));
-			$app->response()->headers->set('Content-Type', 'application/json');
 			echo json_encode( array("ok" => array($stName, $stUrl, $stType, $id) ) );
-	
-			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("Updated"); } );';
-			//echo 'setTimeout(function() {$(".message-area").hideMessage()}, 5000 );</script>';
-			//loadAllStations();
-			//$db = null;
+			$db = null;
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
-			$app->response()->headers->set('Content-Type', 'application/json');
 			echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
-			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("PDO Error: ".$e); } ); </script>';
 		}
 	} else {
 		$app->response->setStatus(400);
-		$app->response()->headers->set('Content-Type', 'application/json');
 		echo json_encode( array("error" => array( "text" => "input error") ) );
-		//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("ERROR"); } );';
-		//echo 'setTimeout(function() {$(".message-area").hideMessage()}, 9000 );</script>';
 	}
 }
 	
@@ -350,6 +328,7 @@ function saveStation($id) {
 // -----------------------------------------------------------------------------------------------------------
 function saveMoveStation($id) {
 	$app = \Slim\Slim::getInstance();
+	$app->response()->headers->set('Content-Type', 'application/json');
 	
 	$request = $app->request();
 	$stName = $request->params('st-name');
@@ -381,23 +360,14 @@ function saveMoveStation($id) {
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("UPDATE station set c_id = ?, name = ?, url = ?, type = ?, sortorder = ? WHERE id = ?");
 			$sth->execute(array($newCat, $stName, $stUrl, $stType, $sort, $id));
-	
-			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("Updated"); } );';
-			//echo 'setTimeout(function() {$(".message-area").hideMessage()}, 5000 );</script>';
-			//loadAllStations();
-			//$db = null;
+			$db = null;
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
-			$app->response()->headers->set('Content-Type', 'application/json');
 			echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
-			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("PDO Error: ".$e); } ); </script>';
 		}
 	} else {
 		$app->response->setStatus(400);
-		$app->response()->headers->set('Content-Type', 'application/json');
 		echo json_encode( array("error" => array( "text" => "input error") ) );
-		//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("ERROR"); } );';
-		//echo 'setTimeout(function() {$(".message-area").hideMessage()}, 9000 );</script>';
 	}
 }
 
@@ -408,6 +378,7 @@ function saveMoveStation($id) {
 // -----------------------------------------------------------------------------------------------------------
 function saveNewStation($cid) {
 	$app = \Slim\Slim::getInstance();
+	$app->response()->headers->set('Content-Type', 'application/json');
 	
 	$request = $app->request();
 	$stName = $request->params('st-name');
@@ -435,23 +406,19 @@ function saveNewStation($cid) {
 	
 	if (!isset($stUrl)) { 
 		$app->response->setStatus(400);
-		$app->response()->headers->set('Content-Type', 'application/json');
 		echo json_encode( array("error" => array( "text" => "bad playlist in " . __FUNCTION__) ) );
 	} else if($cid > 0 && isset($stName) && isset($stUrl) && isset($stType) && isset($stSort)) {
 		try{
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("INSERT INTO station (name, c_id, url, type, sortorder) VALUES (?, ?, ?, ?, ?)");
 			$sth->execute(array($stName, $cid, $stUrl, $stType, $stSort));	
-			$app->response()->headers->set('Content-Type', 'application/json');
 			echo json_encode(array("id" => $db->lastInsertId()));
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
-			$app->response()->headers->set('Content-Type', 'application/json');
 			echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
 		}
 	} else {
 		$app->response->setStatus(400);
-		$app->response()->headers->set('Content-Type', 'application/json');
 		echo json_encode( array("error" => array( "text" => "input error") ) );
 	}
 }
@@ -463,28 +430,20 @@ function saveNewStation($cid) {
 // -----------------------------------------------------------------------------------------------------------
 function removeStation($id) {
 	$app = \Slim\Slim::getInstance();
+	$app->response()->headers->set('Content-Type', 'application/json');
 	
 	if($id > 0) {
 		try{
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("DELETE FROM station WHERE id = ?");
 			$sth->execute(array($id));
-	
-			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("Updated"); } );';
-			//echo 'setTimeout(function() {$(".message-area").hideMessage()}, 5000 );</script>';
-			//loadAllStations();
-			//$db = null;
+			$db = null;
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
-			$app->response()->headers->set('Content-Type', 'application/json');
 			echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
-			//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("PDO Error: ".$e); } ); </script>';
 		}
 	} else {
 		$app->response->setStatus(400);
-		$app->response()->headers->set('Content-Type', 'application/json');
 		echo json_encode( array("error" => array( "text" => "input error") ) );
-		//echo '<script> $(document).ready(function() {$(".bar-footer .message-area").html("ERROR"); } );';
-		//echo 'setTimeout(function() {$(".message-area").hideMessage()}, 9000 );</script>';
 	}
 }
