@@ -128,7 +128,7 @@ function updateVolume(vol, callback) {
 	$.ajax({
 		type: 'POST',
 		contentType: 'application/json',
-		url: 'api/setvolume',
+		url: 'api/mpd.php/setvolume',
 		dataType: "json",
 		data: JSON.stringify({'vol': vol}),
 		success: callback,
@@ -210,7 +210,7 @@ $('.knob').on('touchend mouseup', function (e){
 function playerDeleteQueueItem(element, idx) {
 	$.ajax({
 		type: 'DELETE',
-		url: 'api/deletequeueitem/'+Number(idx),
+		url: 'api/mpd.php/deletequeueitem/'+Number(idx),
 		dataType: "json", // data type of response
 		success: function(data){
 			// When the item is delete force a refresh of the list - a little overkill but safe
@@ -224,7 +224,7 @@ function playerDeleteQueueItem(element, idx) {
 function playerSetRepeat(state) {
 	$.ajax({
 		type: 'PUT',
-		url: 'api/setrepeat/'+ state,
+		url: 'api/mpd.php/setrepeat/'+ state,
 		dataType: "json"
 	});
 }
@@ -234,7 +234,7 @@ function playerPause(callback) {
 	callback = typeof callback !== 'undefined' ? callback : function(){};
 	// local playback check
 	if (docCookies.getItem("localPlay") != "true") {
-		$.ajax({type:'PUT', url:'api/transport/pause',success: callback() }); 
+		$.ajax({type:'PUT', url:'api/mpd.php/transport/pause',success: callback() }); 
 	} else {
 		if(localAudio != undefined) {
 			localAudio.pause();
@@ -247,7 +247,7 @@ function playerPlay(calback) {
 	// set the default value if callback is undefined
 	callback = typeof callback !== 'undefined' ? callback : function(){};
 	if (docCookies.getItem("localPlay") != "true") {
-		$.ajax({type:'PUT', url:'api/transport/play',success: callback() });
+		$.ajax({type:'PUT', url:'api/mpd.php/transport/play',success: callback() });
 	} else {
 		if(localAudio != undefined) {
 			localAudio.play();
@@ -260,7 +260,7 @@ function playerStop(callback) {
 	// set the default value if callback is undefined
 	callback = typeof callback !== 'undefined' ? callback : function(){};
 	if (docCookies.getItem("localPlay") != "true") {
-		$.ajax({type:'PUT', url:'api/transport/stop',success:callback() });
+		$.ajax({type:'PUT', url:'api/mpd.php/transport/stop',success:callback() });
 	} else {
 		// local player does not support stop
 		if(localAudio != undefined) {
@@ -273,19 +273,19 @@ function playerStop(callback) {
 function playerPrev(callback) {
 	// set the default value if callback is undefined
 	callback = typeof callback !== 'undefined' ? callback : function(){};
-	$.ajax({type:'PUT', url:'api/transport/prev',success:callback() });
+	$.ajax({type:'PUT', url:'api/mpd.php/transport/prev',success:callback() });
 }
 
 function playerNext(callback) {
 	// set the default value if callback is undefined
 	callback = typeof callback !== 'undefined' ? callback : function(){};
-	$.ajax({type:'PUT', url:'api/transport/next',success:callback() });
+	$.ajax({type:'PUT', url:'api/mpd.php/transport/next',success:callback() });
 }
 
 function playerSeek(i, callback) {
 	// set the default value if callback is undefined
 	callback = typeof callback !== 'undefined' ? callback : function(){};
-	$.ajax({type:'PUT', url:'api/seek/'+i,success:callback() });
+	$.ajax({type:'PUT', url:'api/mpd.php/seek/'+i,success:callback() });
 }
 
 // --------------------------------------------------------------------
@@ -295,7 +295,7 @@ function addStationQ(plQ, stName, stURL) {
 	// These three commands will add the stream to the queue, set the title name and set the artist name (to the stream name)
 	$.ajax({
 		type: 'POST',
-		url: 'api/queueadd',
+		url: 'api/mpd.php/queueadd',
 		dataType: 'json',
 		data: JSON.stringify({'song': stURL }),
 		success: function(data) {
@@ -306,7 +306,7 @@ function addStationQ(plQ, stName, stURL) {
 				if (plQ) {
 					$.ajax({
 						type: 'PUT',
-						url: 'api/seek/'+stID,
+						url: 'api/mpd.php/seek/'+stID,
 						datatype: 'json',
 						error: function(jqXHR, textStatus, errorThrown){
 							console.log('error: ' + jqXHR.responseText + " " + textStatus + " " + errorThrown);} 
@@ -315,13 +315,13 @@ function addStationQ(plQ, stName, stURL) {
 				// at the same time - update the metadata
 				$.ajax({
 					type: 'POST',
-					url: 'api/queuetagadd',
+					url: 'api/mpd.php/queuetagadd',
 					datatype: 'json',
 					data: JSON.stringify({'id': stID, 'tag':'Title', 'data':stName}),
 					success: function (data){
 						$.ajax({
 							type: 'POST',
-							url: 'api/queuetagadd',
+							url: 'api/mpd.php/queuetagadd',
 							datatype: 'json',
 							data: JSON.stringify({'id': stID, 'tag':'albumartist', 'data':stName}),
 							success: function (data){
@@ -346,7 +346,7 @@ function playStation(clQ, plQ, stName, stURL) {
 			//console.log('clear');
 			$.ajax({
 				type: 'PUT',
-				url: 'api/clearqueue',
+				url: 'api/mpd.php/clearqueue',
 				dataType: "json", // data type of response
 				success: function(data) {addStationQ(plQ, stName, stURL);},
 				error: function(jqXHR, textStatus, errorThrown){
@@ -377,14 +377,14 @@ function playPlaylist(name) {
 	$.ajax({
 		type: 'POST',
 		contentType: 'application/json',
-		url: 'api/queueplaylist',
+		url: 'api/mpd.php/queueplaylist',
 		dataType: "json",
 		data: JSON.stringify({'name':name}),
 		success: function(data, textStatus, jqXHR){
 			// on success cascade a update queue buton call
 				$.ajax({
 					type: 'GET',
-					url: 'api/playqueue',
+					url: 'api/mpd.php/playqueue',
 					dataType: "json", // data type of response
 					success: updateQueueButton });
 		},
@@ -654,7 +654,7 @@ function updateVolumeAngle(data) {
 function renderSystemPlaylist(element) {
 	$.ajax({
 		type: 'GET',
-		url: 'api/playlists',
+		url: 'api/mpd.php/playlists',
 		dataType: "json", // data type of response
 		success: function (data) {
 			// JAX-RS serializes an empty list as null, and a 'collection of one' as an object (not an 'array of one')
@@ -679,7 +679,7 @@ function showQueue(element) {
 	if (docCookies.getItem("localPlay") != "true") {
 		$.ajax({
 			type: 'GET',
-			url: 'api/playqueue',
+			url: 'api/mpd.php/playqueue',
 			dataType: "json", // data type of response
 			success: function(data) {
 				// JAX-RS serializes an empty list as null, and a 'collection of one' as an object (not an 'array of one')
@@ -689,7 +689,7 @@ function showQueue(element) {
 				element.append(tmpl("playqueue", list));
 				$.ajax({
 					type: 'GET',
-					url: 'api/status',
+					url: 'api/mpd.php/status',
 					dataType: "json", // data type of response
 					success: function(data){
 						element.find('#pl_'+Number(data.songid)).addClass('q_selected');
@@ -711,7 +711,7 @@ function pollingUIUpdate() {
 		// update the Queue button 
 		$.ajax({
 			type: 'GET',
-			url: 'api/playqueue',
+			url: 'api/mpd.php/playqueue',
 			dataType: "json",
 			success: function (e) {
 				// Reset the error counter and set polling back to the normal time
@@ -742,7 +742,7 @@ function pollingUIUpdate() {
 		// Note: errors are checked and handled in the playqueue ajax call
 		$.ajax({
 			type: 'GET',
-			url: 'api/status',
+			url: 'api/mpd.php/status',
 			dataType: "json", // data type of response
 			success: function(data) {
 				updateVolumeAngle(data);
