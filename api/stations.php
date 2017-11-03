@@ -113,7 +113,7 @@ function setStOrder() {
 			$sth->execute(array($sort += 10, $id));
 		}
 		$db = null;
-		echo json_encode(array("catOrder" => $ar));
+		echo json_encode(array("stOrder" => $ar));
 	} catch(PDOException  $e ){
 		$app->response->setStatus(500);
 		echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
@@ -219,7 +219,7 @@ function saveGrouping($id = 0) {
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("INSERT INTO cat (name, type, color, sortorder) VALUES (?, ?, ?, ?)");
 			$sth->execute(array($request->params('cat-name'), $request->params('type'), $request->params('color'), $request->params('sort')));
-			echo json_encode(array("id" => $db->lastInsertId()));
+			echo json_encode(array("ok" => $db->lastInsertId()));
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
 			echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
@@ -229,6 +229,7 @@ function saveGrouping($id = 0) {
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("UPDATE cat set name = ?, type = ?, color = ? WHERE id = ?");
 			$sth->execute(array($request->params('cat-name'), $request->params('type'), $request->params('color'), $id));
+			echo json_encode(array("ok" => $id));
 			$db = null;
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
@@ -255,6 +256,7 @@ function removeGrouping($id) {
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("DELETE FROM cat WHERE id = ?");
 			$sth->execute(array($id));
+			echo json_encode(array("ok" => $id));
 			$db = null;
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
@@ -360,6 +362,7 @@ function saveMoveStation($id) {
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("UPDATE station set c_id = ?, name = ?, url = ?, type = ?, sortorder = ? WHERE id = ?");
 			$sth->execute(array($newCat, $stName, $stUrl, $stType, $sort, $id));
+			echo json_encode( array("ok" => array($newCat, $stName, $stUrl, $stType, $sort, $id) ) );
 			$db = null;
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
@@ -412,7 +415,7 @@ function saveNewStation($cid) {
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("INSERT INTO station (name, c_id, url, type, sortorder) VALUES (?, ?, ?, ?, ?)");
 			$sth->execute(array($stName, $cid, $stUrl, $stType, $stSort));	
-			echo json_encode(array("id" => $db->lastInsertId()));
+			echo json_encode(array("ok" => $db->lastInsertId()));
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
 			echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
@@ -437,6 +440,7 @@ function removeStation($id) {
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("DELETE FROM station WHERE id = ?");
 			$sth->execute(array($id));
+			echo json_encode(array("ok" => $id));
 			$db = null;
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
