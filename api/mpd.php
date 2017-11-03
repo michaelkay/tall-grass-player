@@ -5,7 +5,7 @@ require_once('mpd/globalFunctions.php');
 \Slim\Slim::registerAutoloader();
 
 // This should point to the MPD server. Put the IP/URL below
-DEFINE('MPD_HOST',          'poolradio.home');
+DEFINE('MPD_HOST',          'localhost');
 DEFINE('MPD_PORT',          '6600');
 DEFINE('MPD_PASSWORD',      NULL);
 
