@@ -219,7 +219,7 @@ function saveGrouping($id = 0) {
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("INSERT INTO cat (name, type, color, sortorder) VALUES (?, ?, ?, ?)");
 			$sth->execute(array($request->params('cat-name'), $request->params('type'), $request->params('color'), $request->params('sort')));
-			echo json_encode(array("ok" => $db->lastInsertId()));
+			echo json_encode(array("id" => $db->lastInsertId()));
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
 			echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
@@ -415,7 +415,7 @@ function saveNewStation($cid) {
 			$db = new PDO('sqlite:../radio.db');
 			$sth = $db->prepare("INSERT INTO station (name, c_id, url, type, sortorder) VALUES (?, ?, ?, ?, ?)");
 			$sth->execute(array($stName, $cid, $stUrl, $stType, $stSort));	
-			echo json_encode(array("ok" => $db->lastInsertId()));
+			echo json_encode(array("id" => $db->lastInsertId()));
 		} catch(PDOException  $e ){
 			$app->response->setStatus(500);
 			echo json_encode( array("error" => array( "text" => "PDO Error: " .$e ) ) );
