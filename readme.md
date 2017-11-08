@@ -11,15 +11,15 @@ TGP is a hybrid web app which runs off a web server. The following must be insta
 For instructions on how to setup php with lighttpd see [this blog post](http://raspberrypimaker.com/installing-php-lighttpd-debian-stretch/)
 
 ## Installation
-Close the git repository or download and unzip in a web folder
-In Linux, change the owner of the radio.db file so the web server user can alter the file
-For example `chown www-data:www-data radio.db`
-Download and install the dependant libraries
-`cd vendor`
-run `deps.sh` (linux) or `deps.bat` (windows)
-If MPD is on a different server from the web server, the address in `api/init.php` should be altered.
-NOTE: If MPD is on a different server, make sure the mdp.conf is edited to allow network access (set bind_to_address to "any").
-Thats it!
+1. Close the git repository or download and unzip in a web folder
+1. In Linux, change the owner of the radio.db file so the web server user can alter the file
+   - For example `chown www-data:www-data radio.db`
+1. Download and install the dependant libraries
+   - `cd vendor`
+   - run `deps.sh` (linux) or `deps.bat` (windows)
+1. If MPD is on a different server from the web server, the address in `api/init.php` should be altered.
+   - NOTE: If MPD is on a different server, make sure the mdp.conf is edited to allow network access (set `bind_to_address` to "any").
+1. Thats it!
 
 # Use
 Using a phone or tablet, browse to TGP. It should pop up.
