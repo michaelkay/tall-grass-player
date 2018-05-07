@@ -687,6 +687,12 @@ function showQueue(element) {
 
 				element.html('');
 				element.append(tmpl("playqueue", list));
+				
+				// The following should be moved to where all .on() elements are defined but it didn't work
+				// when added there
+				$('li').on('swipeleft', function (e) {
+					playerDeleteQueueItem($('#page_queue'), $(this).attr('id').split('_')[1]);	
+				});
 				$.ajax({
 					type: 'GET',
 					url: 'api/mpd.php/status',
@@ -1031,11 +1037,24 @@ $(document).ready(function() {
 	// --------------------------------------------------------------------
 	// Queue page bindings
 	// --------------------------------------------------------------------
-	$('#page_queue').on('taphold', 'li', function (e) {
-		playerDeleteQueueItem($('#page_queue'), $(this).attr('id').split('_')[1]);	
-	});
+	// old UI/UX (the taphold sucked)
+	//$('#page_queue').on('taphold', 'li', function (e) {
+	//	playerDeleteQueueItem($('#page_queue'), $(this).attr('id').split('_')[1]);	
+	//});
+	
+	// NOTE: the following does not work (swipe bug maybe?) when added here. So, it is added
+	// to the code that renders the view of the queue.
+	//$('#page_queue').on('swipeleft', 'li', function (e) {
+	//	playerDeleteQueueItem($('#page_queue'), $(this).attr('id').split('_')[1]);	
+	//});
+	
 	$('#page_queue').on('singletap', 'li', function (e) {
-		playerSeek($(this).attr('id').split('_')[1], function (e) {pollingUIUpdate();} );	
+		// These lines fake the highlight because the UIUpdate can take a long time
+		$('#page_queue li').removeClass('q_selected');
+		$(this).addClass('q_selected');
+	
+		playerSeek($(this).attr('id').split('_')[1], function (e) { } );	
+		//playerSeek($(this).attr('id').split('_')[1], function (e) {pollingUIUpdate();} );	
 	});
 	// --------------------------------------------------------------------
 	// Config page bindings

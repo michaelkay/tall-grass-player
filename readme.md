@@ -8,10 +8,11 @@ TGP is a hybrid web app which runs off a web server. The following must be insta
 - php:PDO (should be included by defalt with PHP)
 - PDO_SQLITE (should be included by default with PHP)
 - MPD (needs to be installed somewhere)
+
 For instructions on how to setup php with lighttpd see [this blog post](http://raspberrypimaker.com/installing-php-lighttpd-debian-stretch/)
 
 ## Installation
-1. Close the git repository or download and unzip in a web folder
+1. Clone the git repository or download and unzip in a web folder
 1. In Linux, change the owner of the radio.db file so the web server user can alter the file
    - For example `chown www-data:www-data radio.db`
 1. Download and install the dependant libraries

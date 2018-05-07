@@ -113,9 +113,9 @@
 				</div></div>
 			</div>
 			<div class="st-name-edit row-sm" style="display:none">
-				<div class="submit-btn col-sm-10"><span class="tgp-floppy tgp-icon-clickable"><span class="reader-text">Save edit</span></span></div>
-				<div class="col-sm"><input type="text" name="st-name" value="{%=o2[key].stationInfo[key2].name%}"></div>
 				<div class="col-sm-10"><span class="delete-btn tgp-icon-clickable tgp-trash-empty"><span class="reader-text">Delete station</span></span></div>
+				<div class="col-sm"><input type="text" name="st-name" value="{%=o2[key].stationInfo[key2].name%}"></div>
+				<div class="submit-btn col-sm-10"><span class="tgp-floppy tgp-icon-clickable"><span class="reader-text">Save edit</span></span></div>
 			</div>
 		</div>
 		<div class="st-edit" style="display:none">
@@ -174,9 +174,9 @@
 				</div></div>
 			</div>
 			<div class="st-name-edit row-sm">
-				<div class="submit-btn col-sm-10"><span class="tgp-floppy tgp-icon-clickable"><span class="reader-text">Save edit</span></span></div>
-				<div class="col-sm"><input type="text" name="st-name" value=""></div>
 				<div class="col-sm-10"><span class="delete-btn tgp-icon-clickable tgp-trash-empty"><span class="reader-text">Delete station</span></span></div>
+				<div class="col-sm"><input type="text" name="st-name" value=""></div>
+				<div class="submit-btn col-sm-10"><span class="tgp-floppy tgp-icon-clickable"><span class="reader-text">Save edit</span></span></div>
 			</div>
 			<div class="st-edit" >
 				<div class="row-sm">
@@ -258,9 +258,9 @@
 				</div></div>
 			</div>
 			<div class="st-name-edit row-sm" style="display:none">
-				<div class="submit-btn col-sm-10"><span class="tgp-floppy tgp-icon-clickable"><span class="reader-text">Save edit</span></span></div>
-				<div class="col-sm"><input type="text" name="cat-name" value="{%=o[key].name%}"></div>
 				<div class="col-sm-10"><span class="delete-btn tgp-icon-clickable tgp-trash-empty"><span class="reader-text">Delete station</span></span></div>
+				<div class="col-sm"><input type="text" name="cat-name" value="{%=o[key].name%}"></div>
+				<div class="submit-btn col-sm-10"><span class="tgp-floppy tgp-icon-clickable"><span class="reader-text">Save edit</span></span></div>
 			</div>
 		</div>
 		<div class="st-edit" style="display:none">
@@ -296,9 +296,9 @@
 			</div></div>
 		</div>
 		<div class="st-name-edit row-sm" >
-			<div class="submit-btn col-sm-10"><span class="tgp-floppy tgp-icon-clickable"></span></div>
-			<div class="col-sm"><input type="text" name="cat-name" value=""></div>
 			<div class="col-sm-10"><span class="delete-btn tgp-icon-clickable tgp-trash-empty"></span></div>
+			<div class="col-sm"><input type="text" name="cat-name" value=""></div>
+			<div class="submit-btn col-sm-10"><span class="tgp-floppy tgp-icon-clickable"></span></div>
 		</div>
 	</div>
 	<div class="st-edit">
